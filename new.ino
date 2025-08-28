@@ -24,7 +24,7 @@
 #include <DMXSerial.h>
 #include "ws2812.h"                // a specific LED controller that disables interrupts to work better
 
-#define NUM_LEDS 56               // number of RGB LEDs on strip
+#define NUM_LEDS 60               // number of RGB LEDs on strip
 #define DMXSTART 1                 // first DMX channel
 #define DMXLENGTH (NUM_LEDS*3)     // number of DMX channels used (3*60 LEDs)
 
@@ -40,58 +40,42 @@ void setup () {
 void loop() {
   uint8_t _dmxData;
 
-  uint8_t p;
-
-  uint8_t In[513] ;
-  uint8_t *ptrIn;
-
-  uint8_t Out[513] ;
   uint8_t *ptrOut;
-
-  uint8_t First8[24] ;
-  uint8_t first8Counter;
-  uint8_t *ptrFirst8;
 
   // wait for an incomming DMX packet and write
   // the RGB data for 60 LEDs on the strip
   if (DMXSerial.receive()) {
 
     // Assign the pointer to the input buffer.
-    ptrIn = DMXSerial.getBuffer();
+    ptrOut = DMXSerial.getBuffer();
 
-    // Load the data for the first 24 channels (8 LEDs into a buffer)
-    for (int p = 0; p <  24 ; p++ ) {
-      First8[p] =*ptrIn;
-      ptrIn++;
-  }
-
-   // Assign the pointer to the first8 buffer.
-    ptrFirst8 = First8; 
-  
-  // Initialise output buffer.
-  for (int out = 0; out <  512 ; out++ ) {
-     Out[out] = 0;
-  }
-
-  // Initialise first8 counter.
-  first8Counter =0;
-
-  // Now use that data to create 7 copy's of the data spread across 56 LEDs
-  for (int index=0; index < 512; index ++){
-    
-      Out[index] =First8[first8Counter];
-      first8Counter++;
-    
-    if (first8Counter > 23) {
-      first8Counter=0;
-    }
-
-  }
-
-  // Assign the pointer to the output buffer.
-  ptrOut = Out;
+    // Map the second set of 8 LED's
+    ptrOut[24] = ptrOut[0];
+    ptrOut[25] = ptrOut[1];
+    ptrOut[26] = ptrOut[2];
+    ptrOut[27] = ptrOut[3];
+    ptrOut[28] = ptrOut[4];
+    ptrOut[29] = ptrOut[5];
+    ptrOut[30] = ptrOut[6];
+    ptrOut[31] = ptrOut[7];
+    ptrOut[32] = ptrOut[8];
+    ptrOut[33] = ptrOut[9];
+    ptrOut[34] = ptrOut[10];
+    ptrOut[35] = ptrOut[11];
+    ptrOut[36] = ptrOut[12];
+    ptrOut[37] = ptrOut[13];
+    ptrOut[38] = ptrOut[14];
+    ptrOut[39] = ptrOut[15];
+    ptrOut[40] = ptrOut[16];
+    ptrOut[41] = ptrOut[17];
+    ptrOut[42] = ptrOut[18];
+    ptrOut[43] = ptrOut[19];
+    ptrOut[44] = ptrOut[20];
+    ptrOut[45] = ptrOut[21];
+    ptrOut[46] = ptrOut[22];
+    ptrOut[47] = ptrOut[23];
  
-  updateNeopixel( *ptrOut+ DMXSTART, NUM_LEDS);
+    updateNeopixel( ptrOut + DMXSTART, NUM_LEDS);
  }
 }
 
