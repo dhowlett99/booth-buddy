@@ -200,7 +200,7 @@ void loop() {
     ptrOut[161] = ptrOut[17];
     ptrOut[162] = ptrOut[18];
     ptrOut[163] = ptrOut[19];
-    ptrOut[163] = ptrOut[20];
+    ptrOut[164] = ptrOut[20];
     ptrOut[165] = ptrOut[21];
     ptrOut[166] = ptrOut[22];
     ptrOut[167] = ptrOut[23];
