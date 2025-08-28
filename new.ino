@@ -21,8 +21,8 @@
 // Gadget Reboot
 // https://www.youtube.com/gadgetreboot
 
-//#include <DMXSerial.h>
-//#include "ws2812.h"                // a specific LED controller that disables interrupts to work better
+#include <DMXSerial.h>
+#include "ws2812.h"                // a specific LED controller that disables interrupts to work better
 
 #define NUM_LEDS 56               // number of RGB LEDs on strip
 #define DMXSTART 1                 // first DMX channel
@@ -30,12 +30,10 @@
 
 void setup () {
 
- //DMXSerial.init(DMXProbe);        // initialize DMX bus in manual access mode
- //DMXSerial.maxChannel(DMXLENGTH); // "onUpdate" will be called when all new ch data has arrived
+ DMXSerial.init(DMXProbe);        // initialize DMX bus in manual access mode
+ DMXSerial.maxChannel(DMXLENGTH); // "onUpdate" will be called when all new ch data has arrived
 
- //setupNeopixel();                 // setup the LED output hardcoded to pin 12 in ws2812.h
-
- Serial.begin(9600);
+ setupNeopixel();                 // setup the LED output hardcoded to pin 12 in ws2812.h
 
 }
 
@@ -54,73 +52,32 @@ void loop() {
   uint8_t first8Counter;
   uint8_t *ptrFirst8;
 
-  Serial.flush();
-  Serial.println("Welcome to Booth Buddy");
-  Serial.flush();
-
   // wait for an incomming DMX packet and write
   // the RGB data for 60 LEDs on the strip
-  //if (DMXSerial.receive()) {
-  //ptr = DMXSerial.getBuffer();
+  if (DMXSerial.receive()) {
 
-  for (int in=0; in<512 ; in++){
-    In[in]=0;
+    // Assign the pointer to the input buffer.
+    ptrIn = DMXSerial.getBuffer();
+
+    // Load the data for the first 24 channels (8 LEDs into a buffer)
+    for (int p = 0; p <  24 ; p++ ) {
+      First8[p] =*ptrIn;
+      ptrIn++;
   }
 
-  for (int in=0; in<24 ; in++){
-    In[in]=in;
-  }
-
-  Serial.println("Start With");
-    
-  for (int sw=0; sw<512; sw++){
-    Serial.print(sw);
-    Serial.print(":");
-    Serial.print(In[sw]);
-    Serial.print(",");
-  } 
-  Serial.println("");
-
-  Serial.flush();
-
- 
-  // Assign the pointer to the input buffer.
-  ptrIn = In;
-
-  // Load the data for the first 24 channels (8 LEDs into a buffer)
-  for (int p = 0; p <  24 ; p++ ) {
-    First8[p] =*ptrIn;
-    ptrIn++;
-  }
-
-  // Assign the pointer to the first8 buffer.
-  ptrFirst8 = First8;
-  
-  Serial.println("Fisrt8 Set to");
-  for (int sw=0; sw<24; sw++){
-    Serial.print(sw);
-    Serial.print(":");
-    Serial.print(ptrFirst8[sw]);
-    Serial.print(",");
-  } 
-  Serial.println("");
-  
+   // Assign the pointer to the first8 buffer.
+    ptrFirst8 = First8; 
   
   // Initialise output buffer.
   for (int out = 0; out <  512 ; out++ ) {
      Out[out] = 0;
   }
 
-first8Counter =0;
+  // Initialise first8 counter.
+  first8Counter =0;
 
   // Now use that data to create 7 copy's of the data spread across 56 LEDs
   for (int index=0; index < 512; index ++){
-    
-      Serial.print("Index ");
-      Serial.print(index);
-      Serial.print(":");
-      Serial.print(First8[first8Counter]);
-      Serial.println("");
     
       Out[index] =First8[first8Counter];
       first8Counter++;
@@ -133,23 +90,8 @@ first8Counter =0;
 
   // Assign the pointer to the output buffer.
   ptrOut = Out;
-  
-  Serial.println("End With");
-  for (int sw=0; sw<512; sw++){
-    Serial.print(sw);
-    Serial.print(":");
-    Serial.print(ptrOut[sw]);
-    Serial.print(",");
-  } 
-  Serial.println("");
-
-  delay(1000);
-
-  Serial.println("");
-  Serial.println("");
-  Serial.println("");
-
-  exit(0);
-  //updateNeopixel( *ptrOut+ DMXSTART, NUM_LEDS);
+ 
+  updateNeopixel( *ptrOut+ DMXSTART, NUM_LEDS);
  }
+}
 
